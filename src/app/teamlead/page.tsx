@@ -1,5 +1,3 @@
-
-import LogoutButton from '@/components/logout-button';
 import { Box, Typography } from '@mui/material';
 import TeamLeadForm from '@/components/teamlead-form';
 export default function TeamLead (){
