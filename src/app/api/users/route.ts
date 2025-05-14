@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
         tasks: []
 }
 
-const users = ["abc"]; 
+const users: User[] = []; 
 
 export async function GET() {
   return NextResponse.json(users);

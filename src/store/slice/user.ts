@@ -1,6 +1,6 @@
 import { User } from '@/assets/data'
 import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit'
-import axios from 'axios'
+
    type User = {
         id: string
         name: string
@@ -23,7 +23,7 @@ const initialState = {
 
 export const getUsers = createAsyncThunk('getUsers',async()=>{
   try{
-    const data = await axios.get('http://localhost:3000/api/users');
+    const data = await fetch('http://localhost:3000/api/users');
     console.log("Data: ",data);
     return data;
   } catch (error) {
@@ -34,9 +34,17 @@ export const getUsers = createAsyncThunk('getUsers',async()=>{
 
 export const addUser = createAsyncThunk('addUser',async(data)=>{
   try{
-    const response = await axios.post('http://localhost:3000/api/users',data);
-    console.log("Response: ",response);
-    return response;
+    const response = await fetch('http://localhost:3000/api/users',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    const result = await response.json();
+    console.log("Result: ",result);
+    return result;
+    
   }catch (error) {
     console.log("Error: ",error);
     return error;
@@ -49,7 +57,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-   
   },
   extraReducers: (builder) => {
     builder
@@ -66,7 +73,16 @@ export const userSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         console.log("Error: ",action.payload);
-      });
+      })
+      .addCase(addUser.pending, () => {  
+        console.log("Pending");
+      })
+      .addCase(addUser.fulfilled, () => {
+        console.log("Fulfilled");
+      })
+      .addCase(addUser.rejected, (state, action) => {
+        console.log("Error: ",action.payload);
+      })
   },
 })
 
