@@ -10,8 +10,8 @@ import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit'
         organization: string
         role: string
         isTeamLead: boolean
-        projects: []
-        tasks: []
+        projects : string[]
+        tasks : string[]
     }
 
 const initialState = {
@@ -51,12 +51,24 @@ export const addUser = createAsyncThunk('addUser',async(data)=>{
   }
 })
 
-
-
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    assignTeamLead: (state, action) => {
+      const { userId} = action.payload;
+      const user = state.users.find(user => user.id === userId);
+      if (user) {
+        user.isTeamLead = true;
+      }
+    },
+    assignProject: (state, action) => {
+      const { userId, projectName } = action.payload;
+      const user = state.users.find(user => user.id === userId);
+      if (user) {
+        user.projects.push(projectName);
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
