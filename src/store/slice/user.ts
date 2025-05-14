@@ -77,7 +77,8 @@ export const userSlice = createSlice({
       .addCase(addUser.pending, () => {  
         console.log("Pending");
       })
-      .addCase(addUser.fulfilled, () => {
+      .addCase(addUser.fulfilled, (state,action) => {
+        state.users.push(action.payload.users);
         console.log("Fulfilled");
       })
       .addCase(addUser.rejected, (state, action) => {

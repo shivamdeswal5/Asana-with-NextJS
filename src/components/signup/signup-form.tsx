@@ -13,6 +13,11 @@ import { pink } from '@mui/material/colors';
 import Link from 'next/link'
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/navigation';
+import { addUser } from '@/store/slice/user';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+
 
 const schema = yup
     .object({
@@ -26,7 +31,9 @@ const schema = yup
     .required()
 
 export default function SignupForm() {
-    const router = useRouter()
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const users = useSelector((state: RootState) => state.user);
 
     type Inputs = {
         name: string
@@ -63,6 +70,13 @@ export default function SignupForm() {
         console.log("Data:  ",data);
         const user:User = {...data,id:uuidv4(),isTeamLead:false,projects:[],tasks:[]}
         console.log("User: ",user);
+        const isEmailExists = users.users.some((user: User) => user.email === data.email);
+        if (isEmailExists) {
+            console.log("Email already exists");
+            router.push('/login');
+        }else{
+            dispatch(addUser(user));
+        }
         router.push('/login');
         reset();
     };
@@ -152,8 +166,7 @@ export default function SignupForm() {
                                 label="Organization"
                                 placeholder='Required'
                                 className={style.changeColor}
-                                name="organization"
-                               
+                                name="organization"         
                             />
                             {<p>{errors.organization?.message}</p>}
 
