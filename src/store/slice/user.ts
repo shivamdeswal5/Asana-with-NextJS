@@ -1,17 +1,23 @@
 import { User } from '@/assets/data'
 import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit'
 
-   type User = {
-        id: string
-        name: string
-        email: string
-        password: string
-        confirmPassword: string
-        organization: string
-        role: string
-        isTeamLead: boolean
-        projects : string[]
-        tasks : string[]
+   interface Project{
+    name: string;
+    members: string[];
+   }
+
+   interface User {
+        id: string;
+        name: string;
+        email: string;
+        password: string;
+        confirmPassword: string;
+        organization: string;
+        role: string;
+        isTeamLead?: boolean;
+        teamName?: string;
+        projects? : Project[]
+        tasks? : string[]
     }
 
 const initialState = {
@@ -24,8 +30,9 @@ const initialState = {
 export const getUsers = createAsyncThunk('getUsers',async()=>{
   try{
     const data = await fetch('http://localhost:3000/api/users');
-    console.log("Data: ",data);
-    return data;
+    const result = await data.json();
+    console.log("Result: ",result);
+    return result;
   } catch (error) {
     console.log("Error: ",error);
     return error;
@@ -43,7 +50,7 @@ export const addUser = createAsyncThunk('addUser',async(data)=>{
     })
     const result = await response.json();
     console.log("Result: ",result);
-    return result;
+    return result.users;
     
   }catch (error) {
     console.log("Error: ",error);
@@ -57,18 +64,62 @@ export const userSlice = createSlice({
   reducers: {
     assignTeamLead: (state, action) => {
       const { userId} = action.payload;
-      const user = state.users.find(user => user.id === userId);
+      const user = state.users.find(user => user.id === action.payload.userId);
       if (user) {
         user.isTeamLead = true;
+        user.teamName = action.payload.teamName;
       }
     },
-    assignProject: (state, action) => {
-      const { userId, projectName } = action.payload;
-      const user = state.users.find(user => user.id === userId);
-      if (user) {
-        user.projects.push(projectName);
-      }
-    }
+     createProject: (state, action) => {
+      const lead = state.users.find(user => user.id === action.payload.leadId && user.isTeamLead);
+      if (!lead) return;
+
+      const project: Project = {
+        name: action.payload.projectName,
+        members: action.payload.members,
+      };
+
+      if (!lead.projects){
+        lead.projects = [];
+        lead.projects.push(project);
+      } 
+
+      action.payload.members.forEach((memberId:string) => {
+        const member = state.users.find(user => user.id === memberId);
+        if (member) {
+          if (!member.projects){
+            member.projects = [];
+          }
+          const alreadyAssigned = member.projects.some(p => p.name === project.name);
+          if (!alreadyAssigned) {
+            member.projects.push({ name: project.name, members: [lead.id] });
+          }
+        }
+      });
+    },
+
+    addMembersToProject: (state,action) => {
+  const lead = state.users.find(user => user.id === action.payload.leadId);
+  if (!lead || !lead.projects){
+    console.log("Lead not found");
+     return;
+  }
+
+  const project = lead.projects.find(p => p.name === action.payload.projectName);
+  if (!project) return;
+
+  action.payload.newMembers.forEach((memberId:string) => {
+    project.members.push(memberId);
+
+    const member = state.users.find(user => user.id === memberId);
+    if (!member) return;
+
+    member.projects = member.projects || [];
+    member.projects.push({ name: project.name, members: [lead.id] });
+  });
+}
+
+
   },
   extraReducers: (builder) => {
     builder
@@ -79,7 +130,7 @@ export const userSlice = createSlice({
       .addCase(getUsers.fulfilled, (state, action) => {
         console.log("Fulfilled");
         state.isLoading = false;
-        state.users.push(action.payload);
+        state.users.push(action.payload.users);
       })
       .addCase(getUsers.rejected, (state, action) => {
         state.isLoading = false;

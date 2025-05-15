@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
- type User = {
+interface Project {
+    name: string;
+    members: string[];
+}
+ interface User  {
         id: string
         name: string
         email: string
@@ -8,9 +12,9 @@ import { NextRequest, NextResponse } from 'next/server';
         confirmPassword: string
         organization: string
         role: string
-        isTeamLead: boolean
-        projects: []
-        tasks: []
+        isTeamLead?: boolean
+        projects?: Project[]
+        tasks?: string[]
 }
 
 const users: User[] = []; 
