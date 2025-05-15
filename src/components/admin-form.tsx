@@ -114,7 +114,7 @@ export default function AdminForm() {
               Existing Teams
             </Typography>
             <Stack spacing={1}>
-              {teams.map((team) => (
+              {teams && teams.map((team) => (
                 <Paper key={team.userId} variant="outlined" sx={{ p: 1 }}>
                   {team.teamName} (Lead: {team.teamLeadName})
                 </Paper>
