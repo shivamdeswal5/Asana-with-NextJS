@@ -2,62 +2,94 @@
 
 import { Box, Button, Typography, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { Grid } from '@mui/material';
+import { useForm} from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+
+interface FormData {
+  projectName: string;
+  userId: string;
+}
+
+const schema = yup
+    .object({
+       projectName: yup.string().required("Team Name is required"),
+       userId : yup.string().required("This field is required")
+    })
+    .required()
 
 
 export default function TeamLeadForm (){
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm<FormData>({
+        resolver: yupResolver(schema),
+    })
+
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+    const users = useSelector((state:RootState)=> state.user.users);
+    const eligibleUsers = users.filter((user)=> user.role!== 'admin' && !user.isTeamLead);
+
+      const onSubmit = (data: FormData) => {
+        console.log("TeamLead Form Data: ",data);
+        
+        reset();
+      };
     return(
     <>
-        <Box sx={{ padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-      <Typography variant="h4" component="h2" gutterBottom>
-        Welcome Team Lead
-      </Typography>
-
-      <Button variant="outlined" color="secondary"  sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-        Logout
-      </Button>
+      <Box sx={{ padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+        <Typography variant="h6" sx={{marginBottom:'1rem'}}>
+            Welcome Team Lead,{currentUser.name} 
+        </Typography>
 
       <Grid container spacing={4} sx={{ maxWidth: '900px', margin: '0 auto' }}>
-        <Grid item xs={12} md={6}>
 
-          <Box sx={{ marginBottom: '2rem' }}>
-            <Typography variant="body1" gutterBottom>
+        <Grid item xs={12} md={6}>
+          <Typography variant="body1" gutterBottom>
               ➤ Create Project
             </Typography>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
+             {...register('projectName')}
               fullWidth
               label="Project Name"
               variant="outlined"
-            //   value={newProjectName}
-            //   onChange={(e) => setNewProjectName(e.target.value)}
               sx={{ marginBottom: '1rem' }}
+              helperText={errors.projectName?.message}
             />
+
             <FormControl fullWidth sx={{ marginBottom: '1rem' }}>
               <InputLabel>Team Members</InputLabel>
               <Select
                 multiple
-                // value={selectedMembers}
-                // onChange={(e) => setSelectedMembers(e.target.value as string[])}
                 label="Team Members"
-                // renderValue={(selected) => selected.join(', ')}
+                {...register('userId')}
               >
-                {/* {teamMembers.map((member, index) => (
-                  <MenuItem key={index} value={member}>
-                    {member}
+                {eligibleUsers.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.name}
                   </MenuItem>
-                ))} */}
+                ))} 
               </Select>
             </FormControl>
             <Button variant="contained" color="primary" >
               Create Project
             </Button>
-          </Box>
+          </form>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Typography variant="h6" gutterBottom>
             ➤ My Projects
           </Typography>
-          {/* {project.projects.length === 0 ? (
+          {project.projects.length === 0 ? (
             <Typography>No projects created yet</Typography>
           ) : (
             project.projects.map((project, index) => (
@@ -79,8 +111,9 @@ export default function TeamLeadForm (){
                 </Button>
               </Box>
             ))
-          )} */}
-        </Grid>
+          )}
+        </Grid> */}
+
       </Grid>
     </Box>
     </>

@@ -1,6 +1,6 @@
 import LogoutButton from '@/components/logout-button';
 import {AppBar, Toolbar, Typography} from '@mui/material';
-import AdminForm from '@/components/admin-form';
+import AdminForm from '@/components/forms/admin-form';
 export default function AdminDashboard() {
  
   return (
