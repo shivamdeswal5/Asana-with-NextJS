@@ -1,6 +1,5 @@
 import { User } from '@/assets/data'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { get } from 'http';
 
 interface Project {
   name: string;

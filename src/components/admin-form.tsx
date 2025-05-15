@@ -16,11 +16,13 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { UseDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { assignTeamLead } from '@/store/slice/user';
+import { RootState } from '@/store/store';
 
 interface Team {
-  name: string;
-  lead: string;
+  id: string;
+  teamName: string;
 }
 
 interface FormData {
@@ -45,9 +47,16 @@ export default function AdminForm() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
-    
+  const users = useSelector((state: RootState) => state.user.users);
+  const dispatch = useDispatch();
+  console.log("Users in admin dashboard: ",users);
+  const eligibleLeads = users.filter((user)=> user.role!=="admin" && !user.isTeamLead);
+  console.log("Eligible Leads: ", eligibleLeads);
 
+  const onSubmit = (data: FormData) => {
+    console.log("Data");
+    
+     reset();
   };
 
 
@@ -85,11 +94,11 @@ export default function AdminForm() {
                     <FormControl fullWidth error={!!errors.teamLead}>
                       <InputLabel>Select Team Lead</InputLabel>
                       <Select {...field} label="Select Team Lead">
-                        {/* {eligibleLeads.map((user, index) => (
-                          <MenuItem key={index} value={user.name}>
+                        {eligibleLeads.map((user) => (
+                          <MenuItem key={user.id} value={user.name}>
                             {user.name}
                           </MenuItem>
-                        ))} */}
+                        ))}
                       </Select>
                       {errors.teamLead && (
                         <Typography variant="caption" color="error">
@@ -107,19 +116,20 @@ export default function AdminForm() {
             </form>
           </Box>
 
-          <Box mt={5}>
+          {/* <Box mt={5}>
             <Typography variant="h6" gutterBottom>
               Existing Teams
             </Typography>
             <Stack spacing={1}>
-              {/* {team.teams.map((team: Team, idx) => (
+              {team.teams.map((team: Team, idx) => (
                 <Paper key={idx} variant="outlined" sx={{ p: 1 }}>
                   {team.name} (Lead: {team.lead})
                 </Paper>
-              ))} */}
+              ))}
             </Stack>
-          </Box>
-        </Paper>
+          </Box> */}
+
+       </Paper>
       </Container>
     </>
   );

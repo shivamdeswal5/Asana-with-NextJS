@@ -1,11 +1,14 @@
 'use client';
 import React from 'react'
 import {Button} from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 export default function LogoutButton() {
+  const router = useRouter();
     
   const handleLogout = () => {
-    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('Currentuser');
+    router.push('/login');
   };
   
   return (

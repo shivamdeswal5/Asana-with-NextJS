@@ -122,6 +122,7 @@ export default function LoginForm() {
                                 placeholder='Required'
                                 className={style.changeColor}
                                 name="email"
+                                sx={{width:'35vh'}}
                             />
                             {errors.email?.message}
                         </Box>
