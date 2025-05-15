@@ -4,13 +4,10 @@ import { Grid } from '@mui/material';
 
 const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
 
-type TeamLeadProps = {};
 
-const TeamLeadDashboard: React.FC<TeamLeadProps> = () => {
+const TeamLeadDashboard = () => {
 
  
-
-  
   const handleLogout = () => {
     sessionStorage.removeItem('currentUser');
   
@@ -26,7 +23,7 @@ const TeamLeadDashboard: React.FC<TeamLeadProps> = () => {
         Logout
       </Button>
 
-      <Grid container spacing={4} sx={{ maxWidth: '900px', margin: '0 auto' }}>
+      {/* <Grid container spacing={4} sx={{ maxWidth: '900px', margin: '0 auto' }}>
         <Grid item xs={12} md={6}>
 
           <Box sx={{ marginBottom: '2rem' }}>
@@ -91,7 +88,7 @@ const TeamLeadDashboard: React.FC<TeamLeadProps> = () => {
             ))
           )}
         </Grid>
-      </Grid>
+      </Grid> */}
     </Box>
   );
 };

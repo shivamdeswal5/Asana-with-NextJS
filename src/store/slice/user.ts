@@ -1,5 +1,4 @@
-import { User } from '@/assets/data'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 
 interface Project {
   name: string;
