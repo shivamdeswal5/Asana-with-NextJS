@@ -9,7 +9,7 @@ interface Project {
         name: string
         email: string
         password: string
-        confirmPassword: string
+        confirmPassword?: string
         organization: string
         role: string
         isTeamLead?: boolean
@@ -25,11 +25,19 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email,password,confirmPassword,organization,role,isTeamLead,projects,tasks,id } = body;
+  const { name, email,password,organization,role,id} = body;
 
-  if (!name || !email || !password || !confirmPassword || !organization || !role) {
+  if (!name || !email || !password || !organization || !role) {
     return NextResponse.json({ error: 'Please Fill All The Feilds ..' }, { status: 400 });
   }
-  users.push({ name, email,password,confirmPassword,organization,role,isTeamLead,projects,tasks,id});
-  return NextResponse.json({ message: 'User added', users });
+  const data ={
+    name,
+    email,
+    password,
+    organization,
+    role,
+    id
+  }
+  users.push({ name, email,password,organization,role,id});
+  return NextResponse.json({ message: 'User added', data,users });
 }

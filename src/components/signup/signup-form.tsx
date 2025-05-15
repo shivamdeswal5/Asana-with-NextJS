@@ -33,7 +33,7 @@ const schema = yup
 export default function SignupForm() {
     const dispatch = useDispatch();
     const router = useRouter();
-    const users = useSelector((state: RootState) => state.user);
+    const users = useSelector((state: RootState) => state.user.users);
 
     type Inputs = {
         name: string
@@ -52,9 +52,9 @@ export default function SignupForm() {
         confirmPassword: string
         organization: string
         role: string
-        isTeamLead: boolean
-        projects: []
-        tasks: []
+        isTeamLead?: boolean
+        projects?: []
+        tasks?: []
     }
    
     const {
@@ -67,17 +67,17 @@ export default function SignupForm() {
     })
 
     const onSubmit = (data: Inputs) => {
-        console.log("Data:  ",data);
         const user:User = {...data,id:uuidv4(),isTeamLead:false,projects:[],tasks:[]}
-        console.log("User: ",user);
-        const isEmailExists = users.users.some((user: User) => user.email === data.email);
+        console.log("User Signup Page: ",user);
+        const isEmailExists = users.some((user) => user.email === data.email);
+        console.log("Is Email Exists: ",isEmailExists);
         if (isEmailExists) {
-            console.log("Email already exists");
-            router.push('/login');
+            console.log("User already exists ..");
+            alert("User already exists ..");
         }else{
             dispatch(addUser(user));
+            router.push('/login');
         }
-        router.push('/login');
         reset();
     };
 
@@ -140,6 +140,7 @@ export default function SignupForm() {
                                 id="outlined-required"
                                 label="Password"
                                 placeholder='Required'
+                                type='password'
                                 className={style.changeColor}
                                 name="password"
                             />
@@ -154,6 +155,7 @@ export default function SignupForm() {
                                 placeholder='Required'
                                 className={style.changeColor}
                                 name="confirmPassword"
+                                type='password'
 
                             />
                             {errors.confirmPassword?.message}

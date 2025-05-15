@@ -13,6 +13,26 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
+
+interface Project {
+  name: string;
+  members: string[];
+}
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  organization: string;
+  role: string;
+  isTeamLead?: boolean;
+  teamName?: string;
+  projects?: Project[]
+  tasks?: string[]
+}
+
+
 const schema = yup
     .object({
         email: yup.string().email("Invalid Email Format").required("Email is required"),
@@ -23,26 +43,13 @@ const schema = yup
 export default function LoginForm() {
     
     const router = useRouter();
-    const users = useSelector((state: RootState) => state.user);
+    const users = useSelector((state: RootState) => state.user.users);
 
     type Inputs = {
         email: string
         password: string
     }
 
-    type User = {
-        id: string
-        name: string
-        email: string
-        password: string
-        confirmPassword: string
-        organization: string
-        role: string
-        isTeamLead: boolean
-        projects: []
-        tasks: []
-    }
-   
     const {
         register,
         handleSubmit,
@@ -53,9 +60,11 @@ export default function LoginForm() {
     })
 
     const onSubmit = (data: Inputs) => {
-        console.log("Data: ", data);
-
-        const matchedUser = users.users.find((user: User) => user.email === data.email);
+        console.log("Form Data: ", data);
+        console.log("Users in Login Page: ", users);
+        const matchedUser = users.find((user:User) => user.email === data.email);
+        console.log("Matched User: ", matchedUser);
+        sessionStorage.setItem("Currentuser", JSON.stringify(matchedUser));
          if (matchedUser) {
             console.log("Login Successful. Welcome:", matchedUser.name);
             sessionStorage.setItem("currentUser", JSON.stringify(matchedUser));
@@ -125,6 +134,7 @@ export default function LoginForm() {
                                 placeholder='Required'
                                 className={style.changeColor}
                                 name="password"
+                                type='password'
                             />
                             {errors.password?.message}
                         </Box>
