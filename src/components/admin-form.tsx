@@ -11,11 +11,6 @@ import { assignTeamLead } from '@/store/slice/user';
 import { addProject } from '@/store/slice/team';
 import { RootState } from '@/store/store';
 
-// interface Team {
-//   id: string;
-//   teamName: string;
-// }
-
 interface FormData {
   teamName: string;
   userId: string;
@@ -50,7 +45,7 @@ export default function AdminForm() {
 
   const onSubmit = (data: FormData) => {
     console.log("Admin Form Data: ",data);
-    const teamLeadName = users.find((user)=> user.id === data.userId)
+    const teamLeadName = users.find((user)=> user.id === data.userId)?.name;
     dispatch(assignTeamLead(data))
     const teamData = {...data,teamLeadName}
     dispatch(addProject(teamData))
@@ -86,17 +81,16 @@ export default function AdminForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    label="Team Lead"
-                    
+                    label="Team Lead"                  
                     {...register('userId')}
                   >
                     {
                       eligibleLeads.map((user)=>(
                         <MenuItem
-                        key={user.id} value={user.id}> 
+                         key={user.id} value={user.id}> 
                           {user.name}
                         </MenuItem>
-                      ))
+                      ))  
                     }
                   </Select>
                 </FormControl>
@@ -114,11 +108,13 @@ export default function AdminForm() {
               Existing Teams
             </Typography>
             <Stack spacing={1}>
-              {teams && teams.map((team) => (
+              { teams.length ==0 ? (<Box>No Existing Teams</Box>) : (teams.map((team) => (
                 <Paper key={team.userId} variant="outlined" sx={{ p: 1 }}>
-                  {team.teamName} (Lead: {team.teamLeadName})
+                  <Box>
+                    {team.teamName} (Team Lead: {team.teamLeadName})
+                  </Box>
                 </Paper>
-              ))}
+              )))}
             </Stack>
           </Box>         
 

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import { current } from '@reduxjs/toolkit';
 
 interface Project {
   name: string;
@@ -65,12 +64,12 @@ export const userSlice = createSlice({
   
     assignTeamLead: (state, action) => {
       const user = state.users.find(user => user.id === action.payload.userId);
-      console.log(current(state.users.find(user => user.id === action.payload.userId)))
+     
       if (user) {
         user.isTeamLead = true;
         user.teamName = action.payload.teamName;
       }
-     console.log(current(state.users.find(user => user.id === action.payload.userId)))
+
     },
     createProject: (state, action) => {
       const lead = state.users.find(user => user.id === action.payload.leadId && user.isTeamLead);
