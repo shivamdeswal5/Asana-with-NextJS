@@ -44,6 +44,7 @@ export default function LoginForm() {
     
     const router = useRouter();
     const users = useSelector((state: RootState) => state.user.users);
+    console.log("All Users: ",users)
 
     type Inputs = {
         email: string
@@ -62,9 +63,8 @@ export default function LoginForm() {
     const onSubmit = (data: Inputs) => {
         console.log("Form Data: ", data);
         console.log("Users in Login Page: ", users);
-        const matchedUser = users.find((user:User) => user.email === data.email);
+       const matchedUser = users.find((user: User) => user.email === data.email && user.password !== data.password);
         console.log("Matched User: ", matchedUser);
-        sessionStorage.setItem("Currentuser", JSON.stringify(matchedUser));
          if (matchedUser) {
             console.log("Login Successful. Welcome:", matchedUser.name);
             sessionStorage.setItem("currentUser", JSON.stringify(matchedUser));
